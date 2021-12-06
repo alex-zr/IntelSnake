@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,11 +19,11 @@ import java.util.Random;
  * Date: 1/23/13
  */
 public class View extends javax.swing.JPanel {
-    public static final int FIELD_WIDTH = 5;
-    public static final int FIELD_HEIGHT = 5;
+    public static final int FIELD_WIDTH = 10;
+    public static final int FIELD_HEIGHT = 10;
     public static final int SNAKE_LENGTH = 2;
     public static final Color FIELD_COLOR = Color.LIGHT_GRAY;
-    public static final int DELAY = 150;
+    public static int DELAY = 250;
     private static final int GAME_OVER_DELAY = 3000;
 
     private final Field field = new Field(FIELD_WIDTH, FIELD_HEIGHT);
@@ -33,20 +34,42 @@ public class View extends javax.swing.JPanel {
     private DirectionBridge controller;
     private int score;
     private boolean isPause;
+    private PlaySound playSound;
 
     public View(JFrame main) {
         controller = new DirectionBridgeFactory(main, field, snake, fruits).getDijkstraBridge();
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                isPause = !isPause;
-            }
-        });
 //        controller = new DirectionBridgeFactory(main, field, snake, fruits).getKeyboardController();
         putFruit();
         // For disable background sound
-//        new PlayBackground().start();
-
+        new PlayBackground().start();
+        main.addKeyListener(new KeyAdapter() {
+            private int backFramePosition;
+            private int framePosition;
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    isPause = !isPause;
+                    if (isPause) {
+                        backFramePosition = PlayBackground.clip.getFramePosition();
+                        PlayBackground.clip.stop();
+                        framePosition = PlaySound.clip.getFramePosition();
+                        PlaySound.clip.stop();
+                    } else {
+                        PlayBackground.clip.setFramePosition(backFramePosition);
+                        PlayBackground.clip.start();
+                        PlaySound.clip.setFramePosition(framePosition);
+                        PlaySound.clip.start();
+                    }
+                }
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    DELAY+= 50;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN && DELAY >= 50) {
+                    DELAY-= 50;
+                }
+                System.out.println("press");
+            }
+        });
         new Thread() {
             @Override
             public void run() {
@@ -92,7 +115,9 @@ public class View extends javax.swing.JPanel {
             putFruit();
             snake.grow();
             // For disable event sound
-            new PlaySound().start();
+
+            playSound = new PlaySound();
+            playSound.start();
         }
         return null;
     }
@@ -221,14 +246,21 @@ public class View extends javax.swing.JPanel {
         snake.paintPath(g, cellHeight, cellWidth);
         paintCenterText(g);
         paintScore(g);
+        paintDelay(g);
     }
 
     private void paintScore(Graphics g) {
         Color tmpColor = g.getColor();
         g.setColor(Color.WHITE);
-        g.drawString(String.valueOf(score), 50, 50);
+        g.drawString("Score: " + score, 50, 50);
         g.setColor(tmpColor);
+    }
 
+    private void paintDelay(Graphics g) {
+        Color tmpColor = g.getColor();
+        g.setColor(Color.WHITE);
+        g.drawString("Delay: " + DELAY, 50, 70);
+        g.setColor(tmpColor);
     }
 
     private void paintFruits(Graphics g, int cellHeight, int cellWidth) {
