@@ -1,13 +1,12 @@
 package jon.com.ua;
 
-import jon.com.ua.pathfind.DirectionBridge;
-import jon.com.ua.pathfind.DirectionBridgeFactory;
+import jon.com.ua.pathfind.DirectionSupplier;
+import jon.com.ua.pathfind.DirectionSupplierFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,16 +30,15 @@ public class View extends javax.swing.JPanel {
     private final List<Fruit> fruits = new ArrayList<>();
     private final Random rnd = new Random();
     private String textOnCenter;
-    private DirectionBridge controller;
+    private DirectionSupplier controller;
     private int score;
     private boolean isPause;
     private PlaySound playSound;
 
     public View(JFrame main) {
-        controller = new DirectionBridgeFactory(main, field, snake, fruits).getDijkstraBridge();
-//        controller = new DirectionBridgeFactory(main, field, snake, fruits).getKeyboardController();
+        // Set controller here
+        controller = new DirectionSupplierFactory(main, field, snake, fruits).getDijkstraBridge();
         putFruit();
-        // For disable background sound
         new PlayBackground().start();
         main.addKeyListener(new KeyAdapter() {
             private int backFramePosition;
@@ -52,13 +50,17 @@ public class View extends javax.swing.JPanel {
                     if (isPause) {
                         backFramePosition = PlayBackground.clip.getFramePosition();
                         PlayBackground.clip.stop();
-                        framePosition = PlaySound.clip.getFramePosition();
-                        PlaySound.clip.stop();
+                        if (PlaySound.clip != null) {
+                            framePosition = PlaySound.clip.getFramePosition();
+                            PlaySound.clip.stop();
+                        }
                     } else {
                         PlayBackground.clip.setFramePosition(backFramePosition);
                         PlayBackground.clip.start();
-                        PlaySound.clip.setFramePosition(framePosition);
-                        PlaySound.clip.start();
+                        if (PlaySound.clip != null) {
+                            PlaySound.clip.setFramePosition(framePosition);
+                            PlaySound.clip.start();
+                        }
                     }
                 }
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -85,7 +87,6 @@ public class View extends javax.swing.JPanel {
                     if (snake.getBittenItself() != null) {
                         gameOver();
                     }
-                    //checkSnakeEatedItself();
                     repaint();
                     checkSnakeDead();
                 }
@@ -101,12 +102,6 @@ public class View extends javax.swing.JPanel {
         snake.setPath(controller.getPath());
     }
 
-    private void checkSnakeEatedItself() {
-        if (snake.getBittenItself() != null) {
-            gameOver();
-        }
-    }
-
     private Fruit checkSnakeEatedFruit() {
         Fruit eatedFruit = tryToEatFruitAndGet();
         if (eatedFruit != null) {
@@ -115,7 +110,6 @@ public class View extends javax.swing.JPanel {
             putFruit();
             snake.grow();
             // For disable event sound
-
             playSound = new PlaySound();
             playSound.start();
         }
@@ -148,7 +142,7 @@ public class View extends javax.swing.JPanel {
     }
 
     private void putFruit() {
-        Fruit fruit = null;
+        Fruit fruit;
         do {
             int rndX = rnd.nextInt(field.getWidth());
             int rndY = rnd.nextInt(field.getHeight());
@@ -162,7 +156,6 @@ public class View extends javax.swing.JPanel {
         textOnCenter = null;
         Element head = snake.getHeads().peekFirst();
         if (!MatrixUtil.isInBounds(head, field.getWidth(), field.getHeight())) {
-//        if (field.isXOutOfBounds(head.getX()) || field.isYOutOfBounds(head.getY())) {
             gameOver();
         }
     }
@@ -172,7 +165,6 @@ public class View extends javax.swing.JPanel {
         textOnCenter = "Game over";
         System.out.println("Snake direction: " + snake.getDirection());
         repaint();
-        // TODO: correct
         sleep(GAME_OVER_DELAY);
         score = 0;
         controller.setDirection(Direction.RIGHT);
@@ -208,33 +200,6 @@ public class View extends javax.swing.JPanel {
         main.setBounds(100, 100, 595, 600);
         main.setVisible(true);
     }
-
-/*
-    private static void setController(JFrame main, final Snake snake) {
-        main.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                snake.setOldDirection(snake.getDirection());
-
-                if (e.getKeyCode() == KEY_LEFT && snake.getOldDirection() != Direction.RIGHT) {
-                    snake.setDirection(Direction.LEFT);
-                }
-
-                if (e.getKeyCode() == KEY_RIGHT && snake.getOldDirection() != Direction.LEFT) {
-                    snake.setDirection(Direction.RIGHT);
-                }
-
-                if (e.getKeyCode() == KEY_UP && snake.getOldDirection() != Direction.DOWN) {
-                    snake.setDirection(Direction.UP);
-                }
-
-                if (e.getKeyCode() == KEY_DOWN && snake.getOldDirection() != Direction.UP) {
-                    snake.setDirection(Direction.DOWN);
-                }
-            }
-        });
-    }
-*/
 
     public void paintComponent(Graphics g) {
         int cellHeight = getHeight() / field.getHeight();

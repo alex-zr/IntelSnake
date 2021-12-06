@@ -11,10 +11,10 @@ import java.util.List;
  * User: al1
  * Date: 8/21/13
  */
-public interface DirectionBridge {
+public interface DirectionSupplier {
     Direction getDirection();
 
-    void setDirection(Direction direction);
+    default void setDirection(Direction direction) {}
 
     default List<Vertex> getPath() {
         return Collections.emptyList();

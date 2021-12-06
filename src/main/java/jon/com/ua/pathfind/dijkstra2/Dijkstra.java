@@ -90,11 +90,5 @@ public class Dijkstra {
         computePaths(v0);
         List<Vertex> path = getShortestPathTo(v4);
         System.out.println("Path: " + path);
-/*        Vertex[] vertices = {v0, v1, v2, v3, v4};
-        for (Vertex v : vertices) {
-            System.out.println("Distance to " + v + ": " + v.minDistance);
-            List<Vertex> path = getShortestPathTo(v);
-            System.out.println("Path: " + path);
-        }*/
     }
 }

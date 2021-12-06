@@ -3,7 +3,6 @@ package jon.com.ua.pathfind;
 import jon.com.ua.*;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -12,11 +11,11 @@ import java.util.TreeMap;
  * User: al1
  * Date: 8/23/13
  */
-public class SimpleDirectionBridge implements DirectionBridge {
+public class SimpleDirectionSupplier implements DirectionSupplier {
     private Snake snake;
     private List<Fruit> fruits;
 
-    public SimpleDirectionBridge(Snake snake, List<Fruit> fruits) {
+    public SimpleDirectionSupplier(Snake snake, List<Fruit> fruits) {
         this.snake = snake;
         this.fruits = fruits;
     }
@@ -67,11 +66,5 @@ public class SimpleDirectionBridge implements DirectionBridge {
         double height = targetElement.getY() - rightElement.getY();
         double dist = Math.sqrt(Math.abs(width * width) + Math.abs(height * height));
         return dist;
-    }
-
-
-    @Override
-    public void setDirection(Direction direction) {
-        //this.direction = direction;
     }
 }

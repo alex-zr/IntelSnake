@@ -1,7 +1,7 @@
 package jon.com.ua.pathfind.dijkstra2;
 
 import jon.com.ua.*;
-import jon.com.ua.pathfind.DirectionBridge;
+import jon.com.ua.pathfind.DirectionSupplier;
 
 import java.util.List;
 
@@ -10,15 +10,14 @@ import java.util.List;
  * User: al1
  * Date: 8/23/13
  */
-public class DijkstraDirectionBridge implements DirectionBridge {
+public class DijkstraDirectionSupplier implements DirectionSupplier {
     private Dijkstra dijkstra = new Dijkstra();
-    //private Direction direction;
     private Snake snake;
     private List<Fruit> fruits;
     private Field field;
     private List<Vertex> path;
 
-    public DijkstraDirectionBridge(Snake snake, List<Fruit> fruits, Field field) {
+    public DijkstraDirectionSupplier(Snake snake, List<Fruit> fruits, Field field) {
         this.snake = snake;
         this.fruits = fruits;
         this.field = field;
@@ -31,15 +30,10 @@ public class DijkstraDirectionBridge implements DirectionBridge {
 
         Vertex[][] nodes = DijkstraService.createGraph(snake, field);
         Vertex sourceVertex = nodes[sourceElement.getY()][sourceElement.getX()];
-        // TODO some times null
         Vertex destinationVertex = nodes[destinationElement.getY()][destinationElement.getX()];
-        //Vertex destinationVertex = DijkstraService.elementToVertex(field, destinationElement);
         dijkstra.computePaths(sourceVertex);
         path = dijkstra.getShortestPathTo(destinationVertex);
-//        path.add(0, sourceVertex);
-//        path.add(destinationVertex);
         System.out.println("Path: " + path);
-           //       Element targetElement = DijkstraService.vectToMatr(field, targetVertex);
         Direction direction = calcDirectionByPath(path);
         return direction;
     }
@@ -50,7 +44,6 @@ public class DijkstraDirectionBridge implements DirectionBridge {
     }
 
     private Direction calcDirectionByPath(List<Vertex> path) {
-        // TODO path is empty
         if (path.size() < 2) {
             return Direction.UP;
         }
@@ -71,25 +64,5 @@ public class DijkstraDirectionBridge implements DirectionBridge {
         System.out.println("Destination element: " + targetElement);
         System.out.println("Move: " + res);
         return res;
-    }
-
-    private Direction calcDirectionByVerteces(Element sourceElement, Element targetElement) {
-        Direction res;
-        if (targetElement.getX() > sourceElement.getX()) {
-            res = Direction.RIGHT;
-        } else if (sourceElement.getX() > targetElement.getX()) {
-            res = Direction.LEFT;
-        } else if (targetElement.getY() > sourceElement.getY()) {
-            res = Direction.DOWN;
-        } else {
-            res = Direction.UP;
-        }
-        return res;
-    }
-
-
-    @Override
-    public void setDirection(Direction direction) {
-        //this.direction = direction;
     }
 }
