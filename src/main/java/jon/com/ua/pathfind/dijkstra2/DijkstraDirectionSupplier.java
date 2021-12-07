@@ -34,7 +34,7 @@ public class DijkstraDirectionSupplier implements DirectionSupplier {
         dijkstra.computePaths(sourceVertex);
         path = dijkstra.getShortestPathTo(destinationVertex);
         System.out.println("Path: " + path);
-        Direction direction = calcDirectionByPath(path);
+        Direction direction = calcDirectionByPath(sourceVertex, path, nodes);
         return direction;
     }
 
@@ -43,12 +43,21 @@ public class DijkstraDirectionSupplier implements DirectionSupplier {
         return path;
     }
 
-    private Direction calcDirectionByPath(List<Vertex> path) {
+    private Direction calcDirectionByPath(Vertex sourceVertex, List<Vertex> path, Vertex[][] nodes) {
         if (path.size() < 2) {
-            return Direction.UP;
+            return getFreeArea(sourceVertex, nodes);
         }
         Element sourceElement = path.get(0).getElement();
         Element targetElement = path.get(1).getElement();
+        Direction res = getDirection(sourceElement, targetElement);
+        System.out.println("Snake: " + snake);
+        System.out.println("Source element: " + sourceElement);
+        System.out.println("Destination element: " + targetElement);
+        System.out.println("Move: " + res);
+        return res;
+    }
+
+    private Direction getDirection(Element sourceElement, Element targetElement) {
         Direction res;
         if (targetElement.getX() > sourceElement.getX()) {
             res = Direction.RIGHT;
@@ -59,10 +68,15 @@ public class DijkstraDirectionSupplier implements DirectionSupplier {
         } else {
             res = Direction.UP;
         }
-        System.out.println("Snake: " + snake);
-        System.out.println("Source element: " + sourceElement);
-        System.out.println("Destination element: " + targetElement);
-        System.out.println("Move: " + res);
         return res;
+    }
+
+    private Direction getFreeArea(Vertex sourceVertex, Vertex[][] nodes) {
+        for (Edge edge : sourceVertex.getAdjacencies()) {
+            if (edge.target != null) {
+                return getDirection(sourceVertex.getElement(), edge.target.getElement());
+            }
+        }
+        return Direction.RIGHT;
     }
 }

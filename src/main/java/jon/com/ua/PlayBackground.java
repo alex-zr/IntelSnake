@@ -18,21 +18,12 @@ public class PlayBackground extends Thread {
     private static AudioInputStream ais;
     public static Clip clip;
 
-    static {
-        try {
-            ais = AudioSystem.getAudioInputStream(soundFile);
-            clip = AudioSystem.getClip();
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        } catch (IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void run() {
         try {
             while (!isInterrupted()) {
+                ais = AudioSystem.getAudioInputStream(soundFile);
+                clip = AudioSystem.getClip();
                 clip.open(ais);
 
                 clip.setFramePosition(0);

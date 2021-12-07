@@ -69,7 +69,6 @@ public class View extends javax.swing.JPanel {
                 if (e.getKeyCode() == KeyEvent.VK_DOWN && DELAY >= 50) {
                     DELAY-= 50;
                 }
-                System.out.println("press");
             }
         });
         new Thread() {
@@ -83,7 +82,7 @@ public class View extends javax.swing.JPanel {
                     setSnakeDirection();
                     setSnakePathToTarget();
                     snake.move();
-                    Fruit fruit = checkSnakeEatedFruit();
+                    checkSnakeEatedFruit();
                     if (snake.getBittenItself() != null) {
                         gameOver();
                     }
@@ -191,10 +190,9 @@ public class View extends javax.swing.JPanel {
     }
 
     private static void initWindow() {
-        JFrame main = new JFrame();
+        JFrame main = new JFrame("Intellectual snake");
         main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         final View view = new View(main);
-        //setController(main, view.snake);
 
         main.setContentPane(view);
         main.setBounds(100, 100, 595, 600);

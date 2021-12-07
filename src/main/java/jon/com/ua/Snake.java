@@ -15,7 +15,6 @@ import java.util.List;
  */
 public class Snake {
     private Direction direction;
-    private Direction oldDirection;
     private LinkedList<Element> heads;
     private Color snakeColor = Color.CYAN;
     private boolean isGrow;
@@ -31,7 +30,7 @@ public class Snake {
     }
 
     public void init(int length) {
-        heads = new LinkedList<Element>();
+        heads = new LinkedList<>();
         for (int i = 0; i < length; i++) {
             heads.addFirst(new Element(snakeColor, "", i, 0));
         }
@@ -44,14 +43,6 @@ public class Snake {
 
     public void setDirection(Direction direction) {
         this.direction = direction;
-    }
-
-    public Direction getOldDirection() {
-        return oldDirection;
-    }
-
-    public void setOldDirection(Direction oldDirection) {
-        this.oldDirection = oldDirection;
     }
 
     public LinkedList<Element> getHeads() {
@@ -76,7 +67,6 @@ public class Snake {
             return;
         }
         for (Vertex current : path) {
-            //current.paint(g, cellHeight, cellWidth);
             if (previous == null) {
                 previous = current;
                 continue;
@@ -95,19 +85,10 @@ public class Snake {
     }
 
     public void drawDashedLine(Graphics g, int x1, int y1, int x2, int y2){
-
-        // Create a copy of the Graphics instance
         Graphics2D g2d = (Graphics2D) g.create();
-
-        // Set the stroke of the copy, not the original
-        Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-                0, new float[]{9}, 0);
+        Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
         g2d.setStroke(dashed);
-
-        // Draw to the copy
         g2d.drawLine(x1, y1, x2, y2);
-
-        // Get rid of the copy
         g2d.dispose();
     }
 
@@ -119,10 +100,6 @@ public class Snake {
             heads.removeLast();
         }
         isGrow = false;
-        // TODO remove it
-        if (getBittenItself() != null) {
-            System.out.println(getBittenItself());
-        }
     }
 
     private Element getNewHead(Element lead) {
@@ -171,10 +148,6 @@ public class Snake {
         return lead.getX() == head.getX() && lead.getY() == head.getY();
     }
 
-    public boolean isCollision(Vertex vertex, Element lead) {
-        return isCollision(vertex.getElement(), lead);
-    }
-
     public boolean isBody(Element element) {
         for (Element head : heads) {
             if (isCollision(head, element)) {
@@ -214,7 +187,6 @@ public class Snake {
                 break;
             }
         }
-        //compass.asList().contains(nextElement);
         if (isGlass) {
             System.out.println("---- Dead glass ----");
         }
